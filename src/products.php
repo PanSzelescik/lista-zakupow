@@ -1,6 +1,8 @@
 <?php
 $listFilePath = "products.json";
 
+header('Content-Type: application/json; charset=utf-8');
+
 switch ($_SERVER["REQUEST_METHOD"]) {
     case "GET":
         $list = [];
