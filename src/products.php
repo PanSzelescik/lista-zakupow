@@ -27,11 +27,13 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 $list = json_decode(file_get_contents($listFilePath), true);
             }
 
+            $currentDate = date("Y-m-d H:i:s");
             $product = array(
                 "id" => uniqid(),
                 "name" => $productName,
                 "disabled" => false,
-                "created_at" => date("Y-m-d H:i:s")
+                "created_at" => $currentDate,
+                "modified_at" => $currentDate
             );
             $list[] = $product;
 
@@ -49,25 +51,27 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     case "PUT":
         if (isset($_GET["id"]) && isset($_GET["disabled"])) {
             $productId = $_GET["id"];
+            $productDisabled = $_GET["disabled"] === "1";
             if (file_exists($listFilePath)) {
                 $list = json_decode(file_get_contents($listFilePath), true);
-                $found = false;
 
-                foreach ($list as $key => $product) {
+                $foundProduct = null;
+                foreach ($list as &$product) {
                     if ($product["id"] === $productId) {
-                        $product["disabled"] = $_GET["disabled"] === "1";
-                        $found = true;
+                        $product["disabled"] = $productDisabled;
+                        $product["modified_at"] = date("Y-m-d H:i:s");
+                        $foundProduct = $product;
                         break;
                     }
                 }
+                unset($product);
 
-                if (!$found) {
+                if ($foundProduct === null) {
                     http_response_code(404);
                     echo json_encode(array("success" => false, "message" => "Produkt o podanym ID nie został znaleziony"));
-                }
-                else {
-                    if (file_put_contents($listFilePath, json_encode(array_values($list), JSON_PRETTY_PRINT))) {
-                        echo json_encode(array("success" => true, "message" => "Element został zmieoniony"));
+                } else {
+                    if (file_put_contents($listFilePath, json_encode($list, JSON_PRETTY_PRINT))) {
+                        echo json_encode(array("success" => true, "message" => "Element został zmieniony", "item" => $foundProduct));
                     } else {
                         http_response_code(500);
                         echo json_encode(array("success" => false, "message" => "Błąd podczas zmiany elementu"));
@@ -100,8 +104,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 if (!$found) {
                     http_response_code(404);
                     echo json_encode(array("success" => false, "message" => "Produkt o podanym ID nie został znaleziony"));
-                }
-                else {
+                } else {
                     if (file_put_contents($listFilePath, json_encode(array_values($list), JSON_PRETTY_PRINT))) {
                         echo json_encode(array("success" => true, "message" => "Element usunięty z listy zakupów"));
                     } else {
@@ -113,8 +116,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 http_response_code(404);
                 echo json_encode(array("success" => false, "message" => "Plik z listą zakupów nie istnieje"));
             }
-        }
-        else {
+        } else {
             http_response_code(400);
             echo json_encode(array("success" => false, "message" => "Nie podano danych"));
         }

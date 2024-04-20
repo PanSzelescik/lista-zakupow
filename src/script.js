@@ -29,11 +29,17 @@ function addProductsToList(productList) {
         label.classList.add('form-check-label');
         label.htmlFor = `product-${product.id}`;
         label.textContent = product.name;
+        if (product.disabled) {
+            label.classList.add('text-decoration-line-through');
+        }
 
         const checkbox = document.createElement('input');
         checkbox.classList.add('form-check-input', 'me-1');
         checkbox.type = 'checkbox';
         checkbox.id = `product-${product.id}`;
+        if (product.disabled) {
+            checkbox.checked = true;
+        }
 
         const li = document.createElement('li');
         li.classList.add('list-group-item');
