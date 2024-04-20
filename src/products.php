@@ -30,6 +30,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             $product = array(
                 "id" => uniqid(),
                 "name" => $productName,
+                "disabled" => false,
                 "created_at" => date("Y-m-d H:i:s")
             );
             $list[] = $product;

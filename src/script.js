@@ -1,6 +1,27 @@
-//addProduct('Testowy produkt');
-//getProducts();
-//deleteProduct('6623e3ba2c5c0');
+const nameInput = document.getElementById('input-name');
+const form = document.getElementById('form');
+const ul = document.getElementById('product-list');
+
+form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    nameInput.classList.remove('is-invalid');
+
+    const productName = nameInput.value;
+    const success = await addProduct(productName);
+    if (success) {
+        nameInput.value = '';
+        ul.innerHTML = '';
+        const productList = await getProducts();
+        addProductsToList(productList);
+    } else {
+        nameInput.classList.add('is-invalid');
+    }
+});
+
+getProducts()
+        .then(productList => addProductsToList(productList))
+        .catch(console.error);
 
 async function addProduct(product) {
     try {
@@ -46,7 +67,7 @@ async function getProducts() {
 async function deleteProduct(id) {
     try {
         const response = await fetch(`/products.php?id=${encodeURIComponent(id)}`, {
-            method: 'DELETE',
+            method: 'DELETE'
         });
         const data = await response.json();
 
@@ -61,4 +82,38 @@ async function deleteProduct(id) {
     }
 
     return false;
+}
+
+function addProductsToList(productList) {
+    productList.forEach(product => {
+        const label = document.createElement('label');
+        label.classList.add('form-check-label');
+        label.htmlFor = `product-${product.id}`;
+        label.textContent = product.name;
+
+        const checkbox = document.createElement('input');
+        checkbox.classList.add('form-check-input', 'me-1');
+        checkbox.type = 'checkbox';
+        checkbox.id = `product-${product.id}`;
+
+        const li = document.createElement('li');
+        li.classList.add('list-group-item');
+        li.appendChild(checkbox);
+        li.appendChild(label);
+
+        ul.appendChild(li);
+
+        addListenerToCheckbox(checkbox, label, li);
+    });
+}
+
+function addListenerToCheckbox(checkbox, label, li) {
+    checkbox.addEventListener('change', async () => {
+        if (checkbox.checked) {
+            label.classList.add('text-decoration-line-through');
+        }
+        else {
+            label.classList.remove('text-decoration-line-through');
+        }
+    });
 }
