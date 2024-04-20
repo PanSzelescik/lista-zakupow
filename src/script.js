@@ -23,6 +23,45 @@ getProducts()
         .then(productList => addProductsToList(productList))
         .catch(console.error);
 
+function addProductsToList(productList) {
+    productList.forEach(product => {
+        const label = document.createElement('label');
+        label.classList.add('form-check-label');
+        label.htmlFor = `product-${product.id}`;
+        label.textContent = product.name;
+
+        const checkbox = document.createElement('input');
+        checkbox.classList.add('form-check-input', 'me-1');
+        checkbox.type = 'checkbox';
+        checkbox.id = `product-${product.id}`;
+
+        const li = document.createElement('li');
+        li.classList.add('list-group-item');
+        li.appendChild(checkbox);
+        li.appendChild(label);
+
+        ul.appendChild(li);
+
+        addListenerToCheckbox(product.id, checkbox, label);
+    });
+}
+
+function addListenerToCheckbox(id, checkbox, label) {
+    checkbox.addEventListener('change', async () => {
+        const success = await disableProduct(id, checkbox.checked);
+        if (success) {
+            if (checkbox.checked) {
+                label.classList.add('text-decoration-line-through');
+            }
+            else {
+                label.classList.remove('text-decoration-line-through');
+            }
+        } else {
+            checkbox.checked = !checkbox.checked;
+        }
+    });
+}
+
 async function addProduct(product) {
     try {
         const formData = new FormData();
@@ -64,6 +103,26 @@ async function getProducts() {
     return [];
 }
 
+async function disableProduct(id, disabled) {
+    try {
+        const response = await fetch(`/products.php?id=${encodeURIComponent(id)}&disabled=${disabled ? '1' : '0'}`, {
+            method: 'PUT'
+        });
+        const data = await response.json();
+
+        if (data.success && response.ok) {
+            console.log('Stan produktu został zmieniony');
+            return true;
+        } else {
+            console.warn('Stan produktu nie został zmieniony:', response.status, data.message);
+        }
+    } catch (e) {
+        console.error('Wystąpił błąd podczas zmiany stanu produktu:', e);
+    }
+
+    return false;
+}
+
 async function deleteProduct(id) {
     try {
         const response = await fetch(`/products.php?id=${encodeURIComponent(id)}`, {
@@ -82,38 +141,4 @@ async function deleteProduct(id) {
     }
 
     return false;
-}
-
-function addProductsToList(productList) {
-    productList.forEach(product => {
-        const label = document.createElement('label');
-        label.classList.add('form-check-label');
-        label.htmlFor = `product-${product.id}`;
-        label.textContent = product.name;
-
-        const checkbox = document.createElement('input');
-        checkbox.classList.add('form-check-input', 'me-1');
-        checkbox.type = 'checkbox';
-        checkbox.id = `product-${product.id}`;
-
-        const li = document.createElement('li');
-        li.classList.add('list-group-item');
-        li.appendChild(checkbox);
-        li.appendChild(label);
-
-        ul.appendChild(li);
-
-        addListenerToCheckbox(checkbox, label, li);
-    });
-}
-
-function addListenerToCheckbox(checkbox, label, li) {
-    checkbox.addEventListener('change', async () => {
-        if (checkbox.checked) {
-            label.classList.add('text-decoration-line-through');
-        }
-        else {
-            label.classList.remove('text-decoration-line-through');
-        }
-    });
 }

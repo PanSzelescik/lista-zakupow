@@ -9,28 +9,30 @@
     <link href="/style.css" rel="stylesheet">
 </head>
 <body>
-<h1>Lista zakupów</h1>
-<form id="form">
-    <div class="input-group mb-3 has-validation">
-        <input type="text" class="form-control" placeholder="Nazwa produktu" aria-label="Nazwa produktu" aria-describedby="button-add"
-               id="input-name">
-        <button type="submit" class="btn btn-success" id="button-add">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-            </svg>
-            Dodaj
-        </button>
-        <div class="invalid-feedback">
-            Wprowadź nazwę produktu
+<div class="container">
+    <h1>Lista zakupów</h1>
+    <form id="form">
+        <div class="input-group mb-3 has-validation">
+            <input type="text" class="form-control" placeholder="Nazwa produktu" aria-label="Nazwa produktu" aria-describedby="button-add"
+                   id="input-name">
+            <button type="submit" class="btn btn-success" id="button-add">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+                </svg>
+                Dodaj
+            </button>
+            <div class="invalid-feedback">
+                Wprowadź nazwę produktu
+            </div>
         </div>
-    </div>
-</form>
-<ul id="product-list" class="list-group">
-    <!--<li class="list-group-item">
-        <input class="form-check-input me-1" type="checkbox" id="product-id">
-        <label class="form-check-label" for="product-id">Produkt</label>
-    </li>-->
-</ul>
+    </form>
+    <ul id="product-list" class="list-group">
+        <!--<li class="list-group-item">
+            <input class="form-check-input me-1" type="checkbox" id="product-id">
+            <label class="form-check-label" for="product-id">Produkt</label>
+        </li>-->
+    </ul>
+</div>
 <script async src="/script.js"></script>
 </body>
 </html>

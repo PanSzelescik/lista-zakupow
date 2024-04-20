@@ -46,6 +46,42 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             echo json_encode(array("success" => false, "message" => "Nie podano danych"));
         }
         break;
+    case "PUT":
+        if (isset($_GET["id"]) && isset($_GET["disabled"])) {
+            $productId = $_GET["id"];
+            if (file_exists($listFilePath)) {
+                $list = json_decode(file_get_contents($listFilePath), true);
+                $found = false;
+
+                foreach ($list as $key => $product) {
+                    if ($product["id"] === $productId) {
+                        $product["disabled"] = $_GET["disabled"] === "1";
+                        $found = true;
+                        break;
+                    }
+                }
+
+                if (!$found) {
+                    http_response_code(404);
+                    echo json_encode(array("success" => false, "message" => "Produkt o podanym ID nie został znaleziony"));
+                }
+                else {
+                    if (file_put_contents($listFilePath, json_encode(array_values($list), JSON_PRETTY_PRINT))) {
+                        echo json_encode(array("success" => true, "message" => "Element został zmieoniony"));
+                    } else {
+                        http_response_code(500);
+                        echo json_encode(array("success" => false, "message" => "Błąd podczas zmiany elementu"));
+                    }
+                }
+            } else {
+                http_response_code(404);
+                echo json_encode(array("success" => false, "message" => "Plik z listą zakupów nie istnieje"));
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(array("success" => false, "message" => "Nie podano danych"));
+        }
+        break;
     case "DELETE":
         if (isset($_GET["id"])) {
             $productId = $_GET["id"];
