@@ -119,8 +119,12 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 echo json_encode(array("success" => false, "message" => "Plik z listą zakupów nie istnieje"));
             }
         } else {
-            http_response_code(400);
-            echo json_encode(array("success" => false, "message" => "Nie podano danych"));
+            if (file_put_contents($listFilePath, json_encode(array_values([]), JSON_PRETTY_PRINT))) {
+                echo json_encode(array("success" => true, "message" => "Listy zakupów została wyczyszczona"));
+            } else {
+                http_response_code(500);
+                echo json_encode(array("success" => false, "message" => "Błąd podczas usuwania elementu"));
+            }
         }
         return;
     default:

@@ -5,6 +5,7 @@ const xIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fi
 const nameInput = document.getElementById('input-name');
 const form = document.getElementById('form');
 const ul = document.getElementById('product-list');
+const deleteAllButton = document.getElementById('button-delete-all');
 
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -18,6 +19,13 @@ form.addEventListener('submit', async (event) => {
         await refreshList();
     } else {
         nameInput.classList.add('is-invalid');
+    }
+});
+
+deleteAllButton.addEventListener('click', async () => {
+    const success = await deleteAllProducts();
+    if (success) {
+        await refreshList();
     }
 });
 
@@ -168,6 +176,26 @@ async function deleteProduct(id) {
         }
     } catch (e) {
         console.error('Wystąpił błąd podczas usuwania produktu:', e);
+    }
+
+    return false;
+}
+
+async function deleteAllProducts() {
+    try {
+        const response = await fetch(`/products.php`, {
+            method: 'DELETE'
+        });
+        const data = await response.json();
+
+        if (data.success && response.ok) {
+            console.log('Lista produktów została wyczyszczona');
+            return true;
+        } else {
+            console.warn('Lista produktów nie została wyczyszczona:', response.status, data.message);
+        }
+    } catch (e) {
+        console.error('Wystąpił błąd czyszczenia listy produktów:', e);
     }
 
     return false;
